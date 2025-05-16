@@ -24,7 +24,7 @@ export default function Footer() {
           className="w-full h-full bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1966&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+              "url('https://images.unsplash.com/photo-1608341089966-92c09e62214f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           }}
         ></div>
         {/* Reduced dark overlay */}
@@ -32,7 +32,7 @@ export default function Footer() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-16 relative z-10">
+      <div className="container mx-auto px-4 py-24 relative z-10">
         <div className="grid md:grid-cols-3 gap-10">
           {/* Company Info */}
           <div
@@ -87,7 +87,6 @@ export default function Footer() {
                   href="/"
                   className="text-white/80 hover:text-[#fcb040] transition-colors flex items-center gap-2 group"
                 >
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   <span>Accueil</span>
                 </Link>
               </li>
@@ -96,7 +95,6 @@ export default function Footer() {
                   href="/services/location"
                   className="text-white/80 hover:text-[#fcb040] transition-colors flex items-center gap-2 group"
                 >
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   <span>Location</span>
                 </Link>
               </li>
@@ -105,7 +103,6 @@ export default function Footer() {
                   href="/services/transport"
                   className="text-white/80 hover:text-[#fcb040] transition-colors flex items-center gap-2 group"
                 >
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   <span>Transport</span>
                 </Link>
               </li>
@@ -114,7 +111,6 @@ export default function Footer() {
                   href="/about"
                   className="text-white/80 hover:text-[#fcb040] transition-colors flex items-center gap-2 group"
                 >
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   <span>À propos</span>
                 </Link>
               </li>
@@ -123,7 +119,6 @@ export default function Footer() {
                   href="/contact"
                   className="text-white/80 hover:text-[#fcb040] transition-colors flex items-center gap-2 group"
                 >
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   <span>Contact</span>
                 </Link>
               </li>
