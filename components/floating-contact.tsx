@@ -35,7 +35,7 @@ export default function FloatingContact() {
           </div>
 
           <a
-            href="https://wa.me/"
+            href="https://wa.me/212661482890"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center w-16 h-16 group-hover:scale-105 transform-gpu"
@@ -58,7 +58,7 @@ export default function FloatingContact() {
           </div>
 
           <a
-            href="tel:"
+            href="tel:+212661482890"
             className="bg-[#fcb040] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center w-16 h-16 group-hover:scale-105 transform-gpu"
             aria-label="Call us"
           >

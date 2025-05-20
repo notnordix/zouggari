@@ -4,19 +4,26 @@ import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ChevronDown, Phone, Mail, Menu, X, Home, Info, Car, Truck } from "lucide-react"
+import Image from "next/image"
+import { ChevronDown, Phone, Mail, Menu, X, Car, Truck } from "lucide-react"
+import { useLanguage } from "@/lib/language-context"
 
 interface HeaderProps {
   isScrolled: boolean
 }
 
 export default function Header({ isScrolled }: HeaderProps) {
+  const { t } = useLanguage()
   const [servicesOpen, setServicesOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const servicesDropdownRef = useRef<HTMLDivElement>(null)
+  const servicesButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Determine if header should have background (when scrolled OR mobile menu is open)
+  const shouldShowBackground = isScrolled || mobileMenuOpen
 
   // Debug logging to check if isScrolled prop is received correctly
   useEffect(() => {
@@ -60,7 +67,13 @@ export default function Header({ isScrolled }: HeaderProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
-      if (servicesOpen && servicesDropdownRef.current && !servicesDropdownRef.current.contains(target)) {
+      if (
+        servicesOpen &&
+        servicesDropdownRef.current &&
+        !servicesDropdownRef.current.contains(target) &&
+        servicesButtonRef.current &&
+        !servicesButtonRef.current.contains(target)
+      ) {
         setServicesOpen(false)
       }
     }
@@ -81,48 +94,49 @@ export default function Header({ isScrolled }: HeaderProps) {
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-black/80 backdrop-blur-sm shadow-lg" : "bg-transparent"
+        shouldShowBackground ? "bg-black shadow-lg" : "bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4 py-3">
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-center overflow-visible">
           <div className="max-w-4xl w-full flex items-center justify-between">
-            {/* Home Link with animation */}
+            {/* Home Link with animation - Updated underline styling */}
             <div className="overflow-hidden">
               <Link
                 href="/"
-                className={`nav-link group relative text-white hover:text-[#fcb040] transition-colors font-bold flex items-center gap-1.5 transform transition-transform duration-700 ease-out ${
+                className={`nav-link group relative text-white hover:text-[#fcb040] transition-colors font-bold flex items-center gap-1.5 transform duration-700 ease-out ${
                   isLoaded ? "translate-y-0" : "translate-y-16"
                 }`}
               >
-                <Home className="w-4 h-4" />
-                <span>Accueil</span>
-                <span className="nav-underline absolute -bottom-1 left-1/2 w-0 h-0.5 bg-[#fcb040] group-hover:w-full group-hover:left-0 transition-all duration-300 ease-in-out"></span>
+                <span>{t("home")}</span>
+                <span className="nav-underline absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fcb040] group-hover:w-full transition-all duration-300 ease-in-out"></span>
               </Link>
             </div>
 
-            {/* Services Dropdown with animation */}
-            <div className="overflow-visible" ref={servicesDropdownRef}>
+            {/* Services Dropdown with animation - Updated underline styling */}
+            <div className="overflow-visible">
               <div
                 className={`relative transform transition-transform duration-700 delay-150 ease-out ${
                   isLoaded ? "translate-y-0" : "translate-y-16"
                 }`}
               >
                 <button
+                  ref={servicesButtonRef}
                   className="nav-link group relative text-white hover:text-[#fcb040] transition-colors font-bold flex items-center gap-1.5"
                   onClick={toggleServicesDropdown}
                 >
-                  <span>Services</span>
+                  <span>{t("services")}</span>
                   <ChevronDown
                     className={`h-4 w-4 transition-transform duration-300 ${servicesOpen ? "rotate-180" : ""}`}
                   />
-                  <span className="nav-underline absolute -bottom-1 left-1/2 w-0 h-0.5 bg-[#fcb040] group-hover:w-full group-hover:left-0 transition-all duration-300 ease-in-out"></span>
+                  <span className="nav-underline absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fcb040] group-hover:w-full transition-all duration-300 ease-in-out"></span>
                 </button>
 
-                {/* Services Dropdown Menu */}
+                {/* Services Dropdown Menu - Completely revamped */}
                 <div
-                  className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-lg py-2 z-[60] overflow-hidden transition-all duration-300 ${
+                  ref={servicesDropdownRef}
+                  className={`services-dropdown absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 py-2 rounded-lg shadow-lg overflow-hidden transition-all duration-300 z-[100] ${
                     servicesOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-[-10px]"
                   }`}
                 >
@@ -133,48 +147,50 @@ export default function Header({ isScrolled }: HeaderProps) {
                   >
                     <Car className="w-5 h-5 text-[#fcb040]" />
                     <div>
-                      <p className="font-medium">Location</p>
-                      <p className="text-xs text-white/70">Véhicules haut de gamme</p>
+                      <p className="font-medium">{t("location")}</p>
+                      <p className="text-xs text-white/70">{t("premium_vehicles")}</p>
                     </div>
                   </Link>
-                  <Link
-                    href="/services/transport"
-                    className="flex items-center gap-3 px-4 py-3 text-white hover:bg-white/20 transition-colors"
-                    onClick={() => setServicesOpen(false)}
-                  >
-                    <Truck className="w-5 h-5 text-[#fcb040]" />
+                  {/* Transport link - Disabled */}
+                  <div className="flex items-center gap-3 px-4 py-3 text-white/50 cursor-not-allowed">
+                    <Truck className="w-5 h-5 text-white/30" />
                     <div>
-                      <p className="font-medium">Transport</p>
-                      <p className="text-xs text-white/70">Solutions de transport</p>
+                      <p className="font-medium">{t("transport")}</p>
+                      <p className="text-xs text-white/50">{t("coming_soon")}</p>
                     </div>
-                  </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Logo with animation */}
+            {/* Logo with animation - Replaced text with image */}
             <div className="overflow-hidden">
               <Link
                 href="/"
-                className={`text-3xl font-bold text-white hover:text-[#fcb040] transition-colors transform transition-transform duration-700 delay-300 ease-out ${
+                className={`transform transition-transform duration-700 delay-300 ease-out ${
                   isLoaded ? "translate-y-0 scale-100" : "translate-y-16 scale-95"
                 }`}
               >
-                zouggari
+                <Image
+                  src="/logo.png"
+                  alt="Zouggari Transport"
+                  width={140}
+                  height={40}
+                  className="h-12 w-auto object-contain"
+                />
               </Link>
             </div>
 
-            {/* About Link with animation */}
+            {/* About Link with animation - Updated underline styling */}
             <div className="overflow-hidden">
               <Link
                 href="/about"
-                className={`nav-link group relative text-white hover:text-[#fcb040] transition-colors font-bold flex items-center gap-1.5 transform transition-transform duration-700 delay-450 ease-out ${
+                className={`nav-link group relative text-white hover:text-[#fcb040] transition-colors font-bold flex items-center gap-1.5 transform duration-700 delay-450 ease-out ${
                   isLoaded ? "translate-y-0" : "translate-y-16"
                 }`}
               >
-                <Info className="w-4 h-4" />
-                <span>À propos</span>
-                <span className="nav-underline absolute -bottom-1 left-1/2 w-0 h-0.5 bg-[#fcb040] group-hover:w-full group-hover:left-0 transition-all duration-300 ease-in-out"></span>
+                <span>{t("about")}</span>
+                <span className="nav-underline absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fcb040] group-hover:w-full transition-all duration-300 ease-in-out"></span>
               </Link>
             </div>
 
@@ -188,11 +204,11 @@ export default function Header({ isScrolled }: HeaderProps) {
                 <Link href="/contact" className="block">
                   <div className="bg-white flex items-center justify-center gap-2 py-2 px-3 transition-transform duration-300 group-hover:-translate-y-full">
                     <Phone className="w-4 h-4 text-black" />
-                    <span className="text-black font-medium text-base">Contact</span>
+                    <span className="text-black font-medium text-base">{t("contact")}</span>
                   </div>
                   <div className="bg-[#fcb040] flex items-center justify-center gap-2 py-2 px-3 absolute inset-0 transition-transform duration-300 translate-y-full group-hover:translate-y-0">
                     <Mail className="w-4 h-4 text-white" />
-                    <span className="text-white font-medium text-base">Écrivez</span>
+                    <span className="text-white font-medium text-base">{t("write")}</span>
                   </div>
                 </Link>
               </div>
@@ -202,15 +218,21 @@ export default function Header({ isScrolled }: HeaderProps) {
 
         {/* Mobile Header */}
         <div className="flex md:hidden items-center justify-between">
-          {/* Logo on the left for mobile */}
+          {/* Logo on the left for mobile - Replaced text with image */}
           <div className="overflow-hidden">
             <Link
               href="/"
-              className={`text-2xl font-bold text-white hover:text-[#fcb040] transition-colors transform transition-transform duration-700 ease-out ${
+              className={`transform transition-transform duration-700 ease-out ${
                 isLoaded ? "translate-y-0" : "translate-y-16"
               }`}
             >
-              zouggari
+              <Image
+                src="/logo.png"
+                alt="Zouggari Transport"
+                width={120}
+                height={30}
+                className="h-10 w-auto object-contain"
+              />
             </Link>
           </div>
 
@@ -233,7 +255,7 @@ export default function Header({ isScrolled }: HeaderProps) {
       {/* Mobile Menu - Positioned as a fixed overlay */}
       <div
         ref={mobileMenuRef}
-        className={`mobile-menu fixed inset-x-0 top-[56px] h-[calc(100vh-56px)] bg-black/90 backdrop-blur-md z-40 md:hidden transition-all duration-500 ease-in-out ${
+        className={`mobile-menu fixed inset-x-0 top-[56px] h-[calc(100vh-56px)] bg-black z-40 md:hidden transition-all duration-500 ease-in-out ${
           mobileMenuOpen ? "mobile-menu-open" : "mobile-menu-closed"
         }`}
         style={{ position: "fixed" }}
@@ -246,8 +268,7 @@ export default function Header({ isScrolled }: HeaderProps) {
               className="mobile-menu-item flex items-center gap-2 text-white hover:text-[#fcb040] transition-colors py-2 border-b border-white/10"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Home className="w-4 h-4" />
-              <span className="text-base font-bold">Accueil</span>
+              <span className="text-base font-bold">{t("home")}</span>
             </Link>
 
             {/* Services Dropdown for Mobile */}
@@ -257,7 +278,7 @@ export default function Header({ isScrolled }: HeaderProps) {
                 className="mobile-menu-item flex items-center justify-between w-full text-white hover:text-[#fcb040] transition-colors py-2"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base font-bold">Services</span>
+                  <span className="text-base font-bold">{t("services")}</span>
                 </div>
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-300 ${mobileServicesOpen ? "rotate-180" : ""}`}
@@ -277,21 +298,18 @@ export default function Header({ isScrolled }: HeaderProps) {
                 >
                   <Car className="w-4 h-4 text-[#fcb040]" />
                   <div>
-                    <p className="text-sm font-medium">Location</p>
-                    <p className="text-xs text-white/70">Véhicules haut de gamme</p>
+                    <p className="text-sm font-medium">{t("location")}</p>
+                    <p className="text-xs text-white/70">{t("premium_vehicles")}</p>
                   </div>
                 </Link>
-                <Link
-                  href="/services/transport"
-                  className="mobile-menu-item flex items-center gap-2 pl-6 py-2 text-white hover:bg-white/10 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Truck className="w-4 h-4 text-[#fcb040]" />
+                {/* Transport link - Disabled for mobile */}
+                <div className="mobile-menu-item flex items-center gap-2 pl-6 py-2 text-white/50 cursor-not-allowed">
+                  <Truck className="w-4 h-4 text-white/30" />
                   <div>
-                    <p className="text-sm font-medium">Transport</p>
-                    <p className="text-xs text-white/70">Solutions de transport</p>
+                    <p className="text-sm font-medium">{t("transport")}</p>
+                    <p className="text-xs text-white/50">{t("coming_soon")}</p>
                   </div>
-                </Link>
+                </div>
               </div>
             </div>
 
@@ -300,31 +318,23 @@ export default function Header({ isScrolled }: HeaderProps) {
               className="mobile-menu-item flex items-center gap-2 text-white hover:text-[#fcb040] transition-colors py-2 border-b border-white/10"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Info className="w-4 h-4" />
-              <span className="text-base font-bold">À propos</span>
+              <span className="text-base font-bold">{t("about")}</span>
             </Link>
 
-            <Link
-              href="/contact"
-              className="mobile-menu-item flex items-center gap-2 text-white hover:text-[#fcb040] transition-colors py-2 border-b border-white/10"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Phone className="w-4 h-4" />
-              <span className="text-base font-bold">Contact</span>
-            </Link>
-
-            {/* Contact Button for Mobile */}
+            {/* Contact Button for Mobile - Styled like desktop */}
             <div className="pt-2">
-              <Link
-                href="/contact"
-                className="mobile-menu-item block w-full bg-[#fcb040] text-white py-2 px-3 rounded-lg text-center font-bold transition-all hover:bg-[#e9a439] active:scale-95"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  <span className="text-sm">Écrivez-nous</span>
-                </div>
-              </Link>
+              <div className="mobile-menu-item relative overflow-hidden rounded-lg group">
+                <Link href="/contact" className="block" onClick={() => setMobileMenuOpen(false)}>
+                  <div className="bg-white flex items-center justify-center gap-2 py-2 px-3 transition-transform duration-300 group-hover:-translate-y-full">
+                    <Phone className="w-4 h-4 text-black" />
+                    <span className="text-black font-medium text-base">{t("contact")}</span>
+                  </div>
+                  <div className="bg-[#fcb040] flex items-center justify-center gap-2 py-2 px-3 absolute inset-0 transition-transform duration-300 translate-y-full group-hover:translate-y-0">
+                    <Mail className="w-4 h-4 text-white" />
+                    <span className="text-white font-medium text-base">{t("write")}</span>
+                  </div>
+                </Link>
+              </div>
             </div>
           </nav>
         </div>

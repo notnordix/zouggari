@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Header from "./header"
+import Header from "@/components/home/header"
 import HeroSection from "./hero-section"
+import AboutContent from "./about-content"
+import Footer from "@/components/footer"
 
-export default function HomePage() {
+export default function AboutPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [pageLoaded, setPageLoaded] = useState(false)
 
@@ -12,7 +14,6 @@ export default function HomePage() {
     // Set initial scroll state
     const initialScrollY = window.scrollY
     setIsScrolled(initialScrollY > 10)
-    console.log("Initial scroll position:", initialScrollY, "isScrolled:", initialScrollY > 10)
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY
@@ -35,9 +36,13 @@ export default function HomePage() {
   }, [])
 
   return (
-    <main className={`w-full relative transition-opacity duration-500 ${pageLoaded ? "opacity-100" : "opacity-0"}`}>
+    <main
+      className={`min-h-screen w-full relative transition-opacity duration-500 ${pageLoaded ? "opacity-100" : "opacity-0"}`}
+    >
       <Header isScrolled={isScrolled} />
       <HeroSection />
+      <AboutContent />
+      <Footer />
     </main>
   )
 }
